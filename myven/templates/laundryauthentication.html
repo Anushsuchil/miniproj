@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>laundry Authentication</title>
+</head>
+<body>
+    <h2>laundry Authentication</h2>
+    <form id="laundryauthenticationForm">
+        <label for="laundryId">laundry ID:</label>
+        <input type="text" id="laundryId" name="laundryId" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="button" onclick="authenticateUser()">userAuthenticate</button>
+        
+        <p id="authResultMessage"></p>
+
+        <button type="button" onclick="navigateToRegistration()">Register as New laundry</button>
+    </form>
+
+    <script>
+        function authenticatelaundry() {
+            var laundryId = document.getElementById('laundryId').value;
+            var password = document.getElementById('password').value;
+
+            // Create an object with user credentials
+            var laundryData = {
+                laundry_id: laundryId,
+                password: password
+            };
+
+            // Send an AJAX request to the Flask server
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/laundryauthenticate', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        document.getElementById('authResultMessage').innerText = response.message;
+                        
+                        // Redirect to home page if authentication is successful
+                        if (response.status === 'success') {
+                            window.location.href = '/home';  // Replace '/home' with your home page URL
+                        }
+                    } else {
+                        document.getElementById('resultMessage').innerText = 'Error during authentication.';
+                    }
+                }
+            };
+            xhr.send(JSON.stringify(laundryData));
+        }
+
+        function navigateToRegistration() {
+            window.location.href = '/userregister';
+        }
+    </script>
+</body>
+</html>

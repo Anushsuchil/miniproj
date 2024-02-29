@@ -1,0 +1,89 @@
+<!-- templates/registration.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>laundry Registration</title>
+</head>
+<body>
+    <h2>laundry Registration</h2>
+    <form id="laundryregistrationForm">
+        <label for="newlaundryId">New laundry ID:</label>
+        <input type="text" id="newlaundryId" name="newlaundryId" required>
+
+        <label for="newPassword">New Password:</label>
+        <input type="password" id="newPassword" name="newPassword" required>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="streetName">Street Name:</label>
+        <input type="text" id="streetName" name="streetName" required>
+
+        <label for="village">Village:</label>
+        <input type="text" id="village" name="village" required>
+
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required>
+
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" required>
+
+        <label for="phoneNo">Phone Number:</label>
+        <input type="text" id="phoneNo" name="phoneNo" required>
+
+        <button type="button" onclick="registerlaundry()">Register</button>
+        
+        <p id="registrationResultMessage"></p>
+
+        <button type="button" onclick="navigateToAuthentication()">Back to Authentication</button>
+    </form>
+
+    <script>
+        function registerlaundry() {
+            var newlaundryId = document.getElementById('newlaundryId').value;
+            var newPassword = document.getElementById('newPassword').value;
+            var name = document.getElementById('name').value;
+            var streetName = document.getElementById('streetName').value;
+            var village = document.getElementById('village').value;
+            var city = document.getElementById('city').value;
+            var state = document.getElementById('state').value;
+            var phoneNo = document.getElementById('phoneNo').value;
+
+            // Create an object with user registration data
+            var registrationData = {
+                laundry_id: newlaundryId,
+                password: newPassword,
+                name: name,
+                street_name: streetName,
+                village: village,
+                city: city,
+                state: state,
+                phone_no: phoneNo
+            };
+
+            // Send an AJAX request to the Flask server for registration
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/laundryregister', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        document.getElementById('registrationResultMessage').innerText = response.message;
+                    } else {
+                        document.getElementById('registrationResultMessage').innerText = 'Error during registration.';
+                    }
+                }
+            };
+            xhr.send(JSON.stringify(registrationData));
+        }
+
+        function navigateToAuthentication() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

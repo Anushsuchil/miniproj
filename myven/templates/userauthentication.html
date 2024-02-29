@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Authentication</title>
+</head>
+<body>
+    <h2>User Authentication</h2>
+    <form id="userauthenticationForm">
+        <label for="userId">User ID:</label>
+        <input type="text" id="userId" name="userId" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="button" onclick="authenticateUser()">userAuthenticate</button>
+        
+        <p id="authResultMessage"></p>
+
+        <button type="button" onclick="navigateToRegistration()">Register as New User</button>
+    </form>
+
+    <script>
+        function authenticateUser() {
+            var userId = document.getElementById('userId').value;
+            var password = document.getElementById('password').value;
+
+            // Create an object with user credentials
+            var userData = {
+                user_id: userId,
+                password: password
+            };
+
+            // Send an AJAX request to the Flask server
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/userauthenticate', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        document.getElementById('authResultMessage').innerText = response.message;
+                        
+                        // Redirect to home page if authentication is successful
+                        if (response.status === 'success') {
+                            window.location.href = '/home';  // Replace '/home' with your home page URL
+                        }
+                    } else {
+                        document.getElementById('resultMessage').innerText = 'Error during authentication.';
+                    }
+                }
+            };
+            xhr.send(JSON.stringify(userData));
+        }
+
+        function navigateToRegistration() {
+            window.location.href = '/userregister';
+        }
+    </script>
+</body>
+</html>
