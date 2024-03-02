@@ -1,0 +1,117 @@
+
+<!-- placeorder.html -->
+<!-- placeorder.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Order</title>
+</head>
+<body>
+    <h2>Place Order</h2>
+
+    <p>User ID: <span id="userId"></span></p>
+    <p>Laundry ID: <span id="laundryId"></span></p>
+
+    <!-- Container to display services dynamically -->
+    <div id="servicesContainer"></div>
+
+    <!-- Display total amount -->
+    <p>Total Amount: <span id="totalAmount">0</span></p>
+
+    <button onclick="confirmOrder()">Confirm Order</button>
+
+    <script>
+        var userId;
+        var laundryId;
+        var services = [];
+
+        // Retrieve user id and laundry id from query parameters
+        var urlParams = new URLSearchParams(window.location.search);
+        userId = urlParams.get('user_id');
+        laundryId = urlParams.get('laundry_id');
+
+        // Display user id and laundry id on the page if they are defined
+        if (userId !== null && laundryId !== null) {
+            document.getElementById('userId').textContent = userId;
+            document.getElementById('laundryId').textContent = laundryId;
+
+            // Fetch services from the server
+            fetch(`/get_services?laundry_id=${laundryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    services = data.services_list;
+                    displayServices(services);
+                })
+                .catch(error => console.error('Error fetching services:', error));
+        } else {
+            console.error('User ID or Laundry ID is undefined.');
+        }
+
+        function displayServices(services) {
+            var servicesContainer = document.getElementById('servicesContainer');
+
+            // Check if services are available
+            if (services && services.length > 0) {
+                // Iterate through services and display them with quantity fields
+                services.forEach(service => {
+                    var serviceDiv = document.createElement('div');
+                    serviceDiv.innerHTML = `
+                        <p>Description: ${service[0]}, Price: ${service[1]}rs</p>
+                        <label for="quantity${service[0]}">Quantity:</label>
+                        <input type="number" id="quantity${service[0]}" name="quantity${service[0]}" min="0" value="0" onchange="updateTotalAmount()">
+                    `;
+                    servicesContainer.appendChild(serviceDiv);
+                });
+            } else {
+                console.error('Failed to fetch services.');
+            }
+        }
+
+        function updateTotalAmount() {
+            var totalAmount = 0;
+
+            // Calculate total amount based on quantity and price of each service
+            services.forEach(service => {
+                var quantityInput = document.getElementById(`quantity${service[0]}`);
+                var quantity = parseInt(quantityInput.value);
+                totalAmount += quantity * service[1];
+            });
+
+            // Update total amount on the page
+            document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+        }
+
+        function confirmOrder() {
+            // Get the total amount
+            var totalAmount = parseFloat(document.getElementById('totalAmount').textContent);
+
+            // Prepare order details to send to the server
+            var orderDetails = {
+                user_id: userId,
+                laundry_id: laundryId,
+                total_amount: totalAmount
+                // Add more details as needed
+            };
+
+            // Send order details to the server
+            fetch('/place_order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderDetails)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server, e.g., show a success message
+                alert('Order confirmed!');  // Replace with actual logic
+            })
+            .catch(error => console.error('Error confirming order:', error));
+        }
+    </script>
+</body>
+</html>
+
+

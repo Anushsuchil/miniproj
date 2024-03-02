@@ -1,11 +1,93 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
+    <title>Home</title>
 </head>
 <body>
-    <h2>Welcome to the Home Page!</h2>
+    <h1>Welcome to the Home Page</h1>
+    <p>User ID: {{ user_id }}</p>
+
+    <form id="locationForm">
+        <label for="location">Enter Your Location:</label>
+        <input type="text" id="location" name="location" required>
+        <button type="button" onclick="submitLocation()">Submit</button>
+    </form>
+
+    <div id="laundryList"></div>
+
+    <script>
+        function submitLocation() {
+            var location = document.getElementById('location').value;
+            var userId = "{{ user_id }}";  // Access user_id from Flask variable
+
+            var locationData = {
+                user_id: userId,
+                location: location
+            };
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/get_laundry_list', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            console.log('check')
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var laundryList = JSON.parse(xhr.responseText);
+                    displayLaundryList(laundryList);
+                }
+            };
+            xhr.send(JSON.stringify(locationData));
+        }
+
+        function displayLaundryList(response) {
+            console.log('Received laundry list:', response);
+            
+            var laundryListDiv = document.getElementById('laundryList');
+            if (!laundryListDiv) {
+                console.error('Could not find element with id "laundryList".');
+                return;
+            }
+
+            // Clear previous content
+            laundryListDiv.innerHTML = '';
+
+            // Check the status
+            if (response.status === 'success') {
+                // Add a heading
+                var heading = document.createElement('h2');
+                heading.textContent = 'Laundry List';
+                laundryListDiv.appendChild(heading);
+
+                // Add laundry entries
+                for (var i = 0; i < response.laundry_list.length; i++) {
+                    (function() {
+                        var laundry = response.laundry_list[i];
+
+                        var laundryDiv = document.createElement('div');
+                        laundryDiv.innerHTML = `<p>Laundry ID: ${laundry[0]}, Laundry Name: ${laundry[1]}</p>`;
+
+                        var orderButton = document.createElement('button');
+                        orderButton.textContent = 'Place Order';
+                        orderButton.addEventListener('click', function() {
+                            // Handle placing order logic
+                            placeOrder( laundry[0]);
+                        });
+
+                        laundryDiv.appendChild(orderButton);
+                        laundryListDiv.appendChild(laundryDiv);
+                    })();
+                }
+            } else {
+                console.error('Failed to get the laundry list. Status:', response.status);
+            }
+        } 
+        
+        function placeOrder(laundryId) {
+            var userId = "{{ user_id }}"; 
+            // Redirect to the "place order" page with user id and laundry id
+            window.location.href = `/placeorder?user_id=${userId}&laundry_id=${laundryId}`;
+        }
+    </script>
 </body>
 </html>

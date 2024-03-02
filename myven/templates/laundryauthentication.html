@@ -1,33 +1,34 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>laundry Authentication</title>
+    <title>Laundry Authentication</title>
 </head>
 <body>
-    <h2>laundry Authentication</h2>
+    <h2>Laundry Authentication</h2>
     <form id="laundryauthenticationForm">
-        <label for="laundryId">laundry ID:</label>
+        <label for="laundryId">Laundry ID:</label>
         <input type="text" id="laundryId" name="laundryId" required>
 
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
 
-        <button type="button" onclick="authenticateUser()">userAuthenticate</button>
+        <button type="button" onclick="authenticateLaundry()">Laundry Authenticate</button>
         
         <p id="authResultMessage"></p>
 
-        <button type="button" onclick="navigateToRegistration()">Register as New laundry</button>
+        <button type="button" onclick="navigateToRegistration()">Register as New Laundry</button>
     </form>
 
     <script>
-        function authenticatelaundry() {
+        function authenticateLaundry() {
             var laundryId = document.getElementById('laundryId').value;
             var password = document.getElementById('password').value;
 
-            // Create an object with user credentials
+            // Create an object with laundry credentials
             var laundryData = {
                 laundry_id: laundryId,
                 password: password
@@ -45,10 +46,10 @@
                         
                         // Redirect to home page if authentication is successful
                         if (response.status === 'success') {
-                            window.location.href = '/home';  // Replace '/home' with your home page URL
+                            window.location.href = '/laundryhome';
                         }
                     } else {
-                        document.getElementById('resultMessage').innerText = 'Error during authentication.';
+                        document.getElementById('authResultMessage').innerText = 'Error during authentication.';
                     }
                 }
             };
@@ -56,7 +57,7 @@
         }
 
         function navigateToRegistration() {
-            window.location.href = '/userregister';
+            window.location.href = '/laundryregister';  // Replace '/laundry-register' with your laundry registration page URL
         }
     </script>
 </body>
