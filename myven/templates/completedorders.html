@@ -1,0 +1,74 @@
+<!-- templates/completedorders.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completed Orders</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            margin: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        #completedOrdersContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .orderCard {
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .orderCard:hover {
+            transform: scale(1.02);
+        }
+
+        p {
+            font-size: 16px;
+            margin: 0;
+            line-height: 1.6;
+            color: #555;
+        }
+    </style>
+
+</head>
+<body>
+    <h2>Completed Orders</h2>
+
+
+    <div id="completedOrdersContainer">
+        {% for order in completed_orders %}
+            <div class="orderCard">
+                <p>Order ID: {{ order[0] }}<br>
+                    Customer ID: {{ order[1] }}<br>
+                    Laundry ID: {{ order[2] }}<br>
+                    Date: {{ order[3] }}<br>
+                    Amount: {{ order[4] }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+   
+</body>
+</html>
+
+

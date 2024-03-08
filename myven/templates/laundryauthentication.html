@@ -1,11 +1,90 @@
-
+<!-- laundryauthentication.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laundry Authentication</title>
+    <title>laundryauthentication</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            margin: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #4CAF50;
+        }
+
+        form {
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            margin-top: 15px;
+            font-size: 16px;
+        }
+
+        #authResultMessage {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-top: 10px;
+        }
+
+        #authResultMessage.error {
+            color: red;
+        }
+
+        button[type="button"] {
+            background-color: #555;
+            margin-top: 10px;
+        }
+
+        button[type="button"]:hover {
+            background-color: #333;
+        }
+    </style>
 </head>
 <body>
     <h2>Laundry Authentication</h2>
@@ -16,7 +95,7 @@
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
 
-        <button type="button" onclick="authenticateLaundry()">Laundry Authenticate</button>
+        <button type="button" onclick="authenticateLaundry()">login</button>
         
         <p id="authResultMessage"></p>
 
@@ -44,9 +123,9 @@
                         var response = JSON.parse(xhr.responseText);
                         document.getElementById('authResultMessage').innerText = response.message;
                         
-                        // Redirect to home page if authentication is successful
+                        // Redirect to laundry home page with laundryId in the URL if authentication is successful
                         if (response.status === 'success') {
-                            window.location.href = '/laundryhome';
+                            window.location.href = `/laundryhome?laundry_id=${laundryId}`;
                         }
                     } else {
                         document.getElementById('authResultMessage').innerText = 'Error during authentication.';
@@ -57,7 +136,7 @@
         }
 
         function navigateToRegistration() {
-            window.location.href = '/laundryregister';  // Replace '/laundry-register' with your laundry registration page URL
+            window.location.href = '/laundryregister';
         }
     </script>
 </body>

@@ -4,6 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f8f8f8;
+            color: #333;
+            text-align: center;
+        }
+
+        h1 {
+            color: #4CAF50;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #laundryList {
+            margin-top: 30px;
+        }
+
+        #laundryList div {
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        #laundryList div:hover {
+            transform: scale(1.02);
+        }
+
+        #laundryList p {
+            margin: 0;
+            padding: 10px 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #laundryList button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #laundryList button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    
 </head>
 <body>
     <h1>Welcome to the Home Page</h1>
@@ -65,7 +156,7 @@
                         var laundry = response.laundry_list[i];
 
                         var laundryDiv = document.createElement('div');
-                        laundryDiv.innerHTML = `<p>Laundry ID: ${laundry[0]}, Laundry Name: ${laundry[1]}</p>`;
+                        laundryDiv.innerHTML = `<p>Laundry ID: ${laundry[0]}<br> Laundry Name: ${laundry[1]}</p>`;
 
                         var orderButton = document.createElement('button');
                         orderButton.textContent = 'Place Order';

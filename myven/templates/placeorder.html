@@ -7,12 +7,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Place Order</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        h2 {
+            color: #4CAF50;
+            text-align: center;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        span {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #servicesContainer {
+            margin-top: 20px;
+        }
+
+        #servicesContainer div {
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        #servicesContainer div:hover {
+            transform: scale(1.02);
+        }
+
+        input {
+            width: 60px;
+            padding: 8px;
+            margin-top: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        #totalAmount {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+    </style>
+
 </head>
 <body>
     <h2>Place Order</h2>
 
     <p>User ID: <span id="userId"></span></p>
     <p>Laundry ID: <span id="laundryId"></span></p>
+    <button onclick="navigateToReview()">Review</button>
 
     <!-- Container to display services dynamically -->
     <div id="servicesContainer"></div>
@@ -58,7 +130,7 @@
                 services.forEach(service => {
                     var serviceDiv = document.createElement('div');
                     serviceDiv.innerHTML = `
-                        <p>Description: ${service[0]}, Price: ${service[1]}rs</p>
+                        <p>Description: ${service[0]}<br> Price: ${service[1]}rs</p>
                         <label for="quantity${service[0]}">Quantity:</label>
                         <input type="number" id="quantity${service[0]}" name="quantity${service[0]}" min="0" value="0" onchange="updateTotalAmount()">
                     `;
@@ -109,6 +181,10 @@
                 alert('Order confirmed!');  // Replace with actual logic
             })
             .catch(error => console.error('Error confirming order:', error));
+        }
+        function navigateToReview() {
+            // Redirect to the review page with user_id and laundry_id as query parameters
+            window.location.href = `/review?user_id=${userId}&laundry_id=${laundryId}`;
         }
     </script>
 </body>

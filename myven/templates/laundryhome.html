@@ -1,11 +1,210 @@
+<!-- laundryhome.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>hello</title>
+    <title>Laundry Home</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            margin: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #4CAF50;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #ordersContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        div {
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        button[type="button"] {
+            background-color: #555;
+            margin-top: 10px;
+        }
+
+        button[type="button"]:hover {
+            background-color: #333;
+        }
+    </style>
 </head>
 <body>
-    <p>Laundry ID</p>
+    <h2>Laundry Home</h2>
+
+    <p>Laundry ID: <span id="laundryId"></span></p>
+
+    <!-- Form to add services -->
+    <form id="addServiceForm">
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" required>
+
+        <label for="price">Price (in Rs):</label>
+        <input type="number" id="price" name="price" min="0" step="0.01" required>
+
+        <button type="button" onclick="addService()">Add Service</button>
+        <button type="button" onclick="viewCompletedOrders()">View Completed Orders</button>
+    </form>
+
+    <!-- Container to display orders dynamically -->
+    <div id="ordersContainer"></div>
+
+    <script>
+        // Retrieve laundry id from query parameters
+        var urlParams = new URLSearchParams(window.location.search);
+        var laundryId = urlParams.get('laundry_id');
+
+        // Display laundry id on the page if it is defined
+        if (laundryId !== null) {
+            document.getElementById('laundryId').textContent = laundryId;
+
+            // Fetch orders from the server
+            fetch(`/get_orders?laundry_id=${laundryId}`)
+                .then(response => response.json())
+                .then(data => displayOrders(data))
+                .catch(error => console.error('Error fetching orders:', error));
+        } else {
+            console.error('Laundry ID is undefined.');
+        }
+
+        function displayOrders(orders) {
+            var ordersContainer = document.getElementById('ordersContainer');
+
+            // Check if orders are available
+            if (orders && orders.status === 'success') {
+                // Iterate through orders and display them with a completed button
+                orders.orders_list.forEach(order => {
+                    var orderDiv = document.createElement('div');
+                    orderDiv.innerHTML = `
+                        <p>Order ID: ${order[0]}<br> Order Date: ${order[1]}<br> Amount: ${order[2]}<br> Customer Name: ${order[3]}<br>Customer Phone: ${order[4]}</p>
+                        <button onclick="markOrderCompleted(${order[0]})">Completed</button>
+                    `;
+                    ordersContainer.appendChild(orderDiv);
+                });
+            } else {
+                console.error('Failed to fetch orders. Status:', orders.status);
+            }
+        }
+
+        function addService() {
+            // Get service details from the form
+            var description = document.getElementById('description').value;
+            var price = parseFloat(document.getElementById('price').value);
+
+            // Prepare service details to send to the server
+            var serviceDetails = {
+                laundry_id: laundryId,
+                description: description,
+                price: price
+                // Add more details as needed
+            };
+
+            // Send service details to the server
+            fetch('/add_service', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(serviceDetails)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server, e.g., show a success message
+                if (data.status === 'success') {
+                    alert('Service added successfully!');
+                } else {
+                    alert('Failed to add service.');
+                }
+            })
+            .catch(error => console.error('Error adding service:', error));
+        }
+
+        function markOrderCompleted(orderId) {
+            // Add logic to send the completed status to the server
+            fetch(`/mark_order_completed?order_id=${orderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Order marked as completed!');
+                        // Refresh the orders list after marking an order as completed
+                        fetch(`/get_orders?laundry_id=${laundryId}`)
+                            .then(response => response.json())
+                            .then(data => displayOrders(data))
+                            .catch(error => console.error('Error fetching orders:', error));
+                    } else {
+                        alert('Failed to mark order as completed.');
+                    }
+                })
+                .catch(error => console.error('Error marking order as completed:', error));
+        }
+        function viewCompletedOrders() {
+            // Redirect to the "completed orders" page with laundry id as a query parameter
+            window.location.href = `/completed_orders?laundry_id=${laundryId}`;
+        }
+    </script>
 </body>
 </html>

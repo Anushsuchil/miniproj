@@ -1,0 +1,166 @@
+<!-- review.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        h2 {
+            color: #4CAF50;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #reviewsContainer {
+            margin-top: 30px;
+        }
+
+        #reviewsContainer div {
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        #reviewsContainer div:hover {
+            transform: scale(1.02);
+        }
+
+        #reviewsContainer p {
+            margin: 0;
+            padding: 10px 0;
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h2>Customer Reviews</h2>
+
+    <!-- Container to display reviews dynamically -->
+    <div id="reviewsContainer"></div>
+
+    <!-- Input field for the review -->
+    <label for="reviewInput">Write a Review:</label>
+    <textarea id="reviewInput" name="reviewInput"></textarea>
+
+    <!-- Button to submit the review -->
+    <button onclick="submitReview()">Submit Review</button>
+
+    <script>
+        var userId;
+        var laundryId;
+
+        // Retrieve user id and laundry id from query parameters
+        var urlParams = new URLSearchParams(window.location.search);
+        userId = urlParams.get('user_id');
+        laundryId = urlParams.get('laundry_id');
+
+        // Display user id and laundry id on the page if they are defined
+        if (userId !== null && laundryId !== null) {
+            // Fetch reviews from the server
+            fetch(`/get_reviews?laundry_id=${laundryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayReviews(data.reviews_list);
+                })
+                .catch(error => console.error('Error fetching reviews:', error));
+        } else {
+            console.error('User ID or Laundry ID is undefined.');
+        }
+
+        function displayReviews(reviews) {
+            var reviewsContainer = document.getElementById('reviewsContainer');
+
+            // Check if reviews are available
+            if (reviews && reviews.length > 0) {
+                // Iterate through reviews and display them
+                reviews.forEach(review => {
+                    var reviewDiv = document.createElement('div');
+                    reviewDiv.innerHTML = `
+                        <p>User ID: ${review[0]}</p>
+                        <p>Review: ${review[1]}</p>
+                    `;
+                    reviewsContainer.appendChild(reviewDiv);
+                });
+            } else {
+                console.error('Failed to fetch reviews.');
+            }
+        }
+
+        function submitReview() {
+            var reviewInput = document.getElementById('reviewInput').value;
+
+            // Check if the review input is not empty
+            if (reviewInput.trim() === '') {
+                alert('Please enter a review.');
+                return;
+            }
+
+            // Prepare review details to send to the server
+            var reviewDetails = {
+                user_id: userId,
+                laundry_id: laundryId,
+                review: reviewInput
+                // Add more details as needed
+            };
+
+            // Send review details to the server
+            fetch('/submit_review', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(reviewDetails)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server, e.g., show a success message
+                alert('Review submitted successfully!');  // Replace with actual logic
+            })
+            .catch(error => console.error('Error submitting review:', error));
+        }
+    </script>
+</body>
+</html>
